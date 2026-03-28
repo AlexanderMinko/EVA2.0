@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jooq.version>3.19.16</jooq.version>
-        <h2.version>2.2.224</h2.version>
+        <h2.version>2.1.214</h2.version>
         <flyway.version>10.22.0</flyway.version>
         <flatlaf.version>3.5.4</flatlaf.version>
         <miglayout.version>11.4.2</miglayout.version>
