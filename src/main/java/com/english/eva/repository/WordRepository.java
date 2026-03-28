@@ -62,16 +62,24 @@ public class WordRepository {
     }
 
     public List<Word> findAll() {
-        return dsl.selectFrom(table("words"))
+        var words = dsl.selectFrom(table("words"))
                 .orderBy(field("last_modified").desc())
                 .fetch(this::mapToWord);
+        for (var word : words) {
+            word.setMeanings(meaningRepository.findByWordId(word.getId()));
+        }
+        return words;
     }
 
     public List<Word> findByIds(Set<Long> ids) {
         if (ids.isEmpty()) return List.of();
-        return dsl.selectFrom(table("words"))
+        var words = dsl.selectFrom(table("words"))
                 .where(field("id").in(ids))
                 .fetch(this::mapToWord);
+        for (var word : words) {
+            word.setMeanings(meaningRepository.findByWordId(word.getId()));
+        }
+        return words;
     }
 
     public List<Word> search(SearchParams params) {
@@ -93,8 +101,9 @@ public class WordRepository {
             condition = condition.and(field("meaning.learning_status").in(statusNames));
         }
 
+        List<Word> result;
         if (needsJoin) {
-            return dsl.selectDistinct(
+            result = dsl.selectDistinct(
                             field("words.id").as("ID"),
                             field("words.text").as("TEXT"),
                             field("words.transcript").as("TRANSCRIPT"),
@@ -107,11 +116,15 @@ public class WordRepository {
                     .orderBy(field("words.last_modified").desc())
                     .fetch(this::mapToWord);
         } else {
-            return dsl.selectFrom(words)
+            result = dsl.selectFrom(words)
                     .where(condition)
                     .orderBy(field("last_modified").desc())
                     .fetch(this::mapToWord);
         }
+        for (var word : result) {
+            word.setMeanings(meaningRepository.findByWordId(word.getId()));
+        }
+        return result;
     }
 
     public void delete(Long id) {
