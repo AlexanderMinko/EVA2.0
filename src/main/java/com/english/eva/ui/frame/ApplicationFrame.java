@@ -8,6 +8,7 @@ import javax.swing.JTabbedPane;
 import com.english.eva.repository.ExampleRepository;
 import com.english.eva.service.MeaningService;
 import com.english.eva.service.WordService;
+import com.english.eva.ui.panel.MeaningsPanel;
 import com.english.eva.ui.panel.VocabularyPanel;
 import com.english.eva.ui.panel.WordGymPanel;
 
@@ -24,6 +25,7 @@ public class ApplicationFrame extends JFrame {
         var rootTab = new JTabbedPane();
         rootTab.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         rootTab.addTab("Vocabulary", new VocabularyPanel(wordService, meaningService, exampleRepository));
+        rootTab.addTab("Meanings", new MeaningsPanel(meaningService));
         rootTab.addTab("Word Gym", new WordGymPanel(meaningService));
         rootTab.setSelectedIndex(0);
         add(rootTab, BorderLayout.CENTER);

@@ -94,6 +94,41 @@ public class MeaningTree extends JTree {
         setVisible(true);
     }
 
+    public void showMeaning(Meaning meaning) {
+        setRootVisible(false);
+        var root = new DefaultMutableTreeNode(meaning.getTarget());
+
+        var sourceNode = new DefaultMutableTreeNode(
+                MeaningNode.source(meaning.getMeaningSource() != null
+                        ? meaning.getMeaningSource().getLabel() : "Unknown"));
+        root.add(sourceNode);
+
+        var posNode = new DefaultMutableTreeNode(
+                MeaningNode.partOfSpeech(meaning.getPartOfSpeech() != null
+                        ? meaning.getPartOfSpeech().getLabel() : "Unknown"));
+        sourceNode.add(posNode);
+
+        var meaningNode = new DefaultMutableTreeNode(
+                MeaningNode.meaning(meaning.getId(), meaning.getTarget(), meaning.getLearningStatus()));
+        posNode.add(meaningNode);
+
+        var descNode = new DefaultMutableTreeNode(
+                MeaningNode.description(meaning.getProficiencyLevel(), meaning.getDescription()));
+        meaningNode.add(descNode);
+
+        if (!meaning.getExamples().isEmpty()) {
+            var examplesNode = new DefaultMutableTreeNode(MeaningNode.examplesHeader());
+            for (var example : meaning.getExamples()) {
+                examplesNode.add(new DefaultMutableTreeNode(MeaningNode.example(example.getText())));
+            }
+            meaningNode.add(examplesNode);
+        }
+
+        setModel(new DefaultTreeModel(root));
+        expandTree();
+        setVisible(true);
+    }
+
     private void expandTree() {
         for (int i = 0; i < getRowCount(); i++) {
             var path = getPathForRow(i);
