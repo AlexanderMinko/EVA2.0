@@ -76,8 +76,10 @@ public class MeaningRepository {
         var meanings = dsl.selectFrom(table("meaning"))
                 .where(field("word_id").eq(wordId))
                 .fetch(this::mapToMeaning);
+        var meaningIds = meanings.stream().map(Meaning::getId).collect(Collectors.toSet());
+        var examplesByMeaningId = exampleRepository.findByMeaningIds(meaningIds);
         for (var meaning : meanings) {
-            meaning.setExamples(exampleRepository.findByMeaningId(meaning.getId()));
+            meaning.setExamples(examplesByMeaningId.getOrDefault(meaning.getId(), List.of()));
         }
         return meanings;
     }
