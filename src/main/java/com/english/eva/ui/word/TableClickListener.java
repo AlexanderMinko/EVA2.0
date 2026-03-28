@@ -31,6 +31,7 @@ import com.english.eva.repository.ExampleRepository;
 import com.english.eva.service.MeaningService;
 import com.english.eva.service.WordService;
 import com.english.eva.ui.meaning.MeaningTree;
+import com.english.eva.ui.util.UiUtils;
 import net.miginfocom.swing.MigLayout;
 
 public class TableClickListener extends MouseAdapter {
@@ -65,11 +66,13 @@ public class TableClickListener extends MouseAdapter {
             showWordPopupMenu(event, selectedWordId);
         }
         if (SwingUtilities.isLeftMouseButton(event)) {
-            var selectedWord = wordService.getByIdWithMeanings(selectedWordId);
-            selectedWord.ifPresent(word -> {
-                meaningTree.setWord(word);
-                SwingUtilities.invokeLater(meaningTree::showSelectedUserObjectTree);
-            });
+            UiUtils.runInBackground(
+                    () -> wordService.getByIdWithMeanings(selectedWordId),
+                    result -> result.ifPresent(word -> {
+                        meaningTree.setWord(word);
+                        meaningTree.showSelectedUserObjectTree();
+                    })
+            );
         }
     }
 
