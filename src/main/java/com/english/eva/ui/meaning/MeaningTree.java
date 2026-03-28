@@ -22,6 +22,13 @@ public class MeaningTree extends JTree {
         setCellRenderer(new MeaningTreeCellRenderer());
     }
 
+    public void showLoading() {
+        var root = new DefaultMutableTreeNode("Loading...");
+        setModel(new DefaultTreeModel(root));
+        setRootVisible(true);
+        setVisible(true);
+    }
+
     public Word getWord() {
         return word;
     }

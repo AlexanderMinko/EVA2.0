@@ -66,6 +66,7 @@ public class TableClickListener extends MouseAdapter {
             showWordPopupMenu(event, selectedWordId);
         }
         if (SwingUtilities.isLeftMouseButton(event)) {
+            meaningTree.showLoading();
             UiUtils.runInBackground(
                     () -> wordService.getByIdWithMeanings(selectedWordId),
                     result -> result.ifPresent(word -> {
