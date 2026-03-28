@@ -1,30 +1,33 @@
 package com.english.eva.model;
 
+import java.util.Set;
+
 import com.english.eva.domain.LearningStatus;
 import com.english.eva.domain.PartOfSpeech;
 import com.english.eva.domain.ProficiencyLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MeaningSearchParams {
 
-    private LearningStatus learningStatus;
+    private String text;
+    private Set<ProficiencyLevel> proficiencyLevels;
+    private Set<LearningStatus> learningStatuses;
     private PartOfSpeech partOfSpeech;
-    private ProficiencyLevel proficiencyLevel;
 
-    public MeaningSearchParams() {}
-
+    /**
+     * Backward-compatible constructor used by WordGymPanel and StatisticPanel.
+     */
     public MeaningSearchParams(LearningStatus learningStatus, PartOfSpeech partOfSpeech,
                                 ProficiencyLevel proficiencyLevel) {
-        this.learningStatus = learningStatus;
+        this.learningStatuses = learningStatus != null ? Set.of(learningStatus) : Set.of();
         this.partOfSpeech = partOfSpeech;
-        this.proficiencyLevel = proficiencyLevel;
+        this.proficiencyLevels = proficiencyLevel != null ? Set.of(proficiencyLevel) : Set.of();
     }
-
-    public LearningStatus getLearningStatus() { return learningStatus; }
-    public void setLearningStatus(LearningStatus learningStatus) { this.learningStatus = learningStatus; }
-
-    public PartOfSpeech getPartOfSpeech() { return partOfSpeech; }
-    public void setPartOfSpeech(PartOfSpeech partOfSpeech) { this.partOfSpeech = partOfSpeech; }
-
-    public ProficiencyLevel getProficiencyLevel() { return proficiencyLevel; }
-    public void setProficiencyLevel(ProficiencyLevel proficiencyLevel) { this.proficiencyLevel = proficiencyLevel; }
 }

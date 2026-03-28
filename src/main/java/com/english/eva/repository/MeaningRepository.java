@@ -107,14 +107,19 @@ public class MeaningRepository {
 
     public List<Meaning> search(MeaningSearchParams params) {
         Condition condition = DSL.noCondition();
-        if (Objects.nonNull(params.getLearningStatus())) {
-            condition = condition.and(field("learning_status").eq(params.getLearningStatus().name()));
+        if (Objects.nonNull(params.getText()) && !params.getText().isBlank()) {
+            condition = condition.and(field("target").likeIgnoreCase("%" + params.getText() + "%"));
+        }
+        if (Objects.nonNull(params.getLearningStatuses()) && !params.getLearningStatuses().isEmpty()) {
+            condition = condition.and(field("learning_status")
+                    .in(params.getLearningStatuses().stream().map(Enum::name).toList()));
         }
         if (Objects.nonNull(params.getPartOfSpeech())) {
             condition = condition.and(field("part_of_speech").eq(params.getPartOfSpeech().name()));
         }
-        if (Objects.nonNull(params.getProficiencyLevel())) {
-            condition = condition.and(field("proficiency_level").eq(params.getProficiencyLevel().name()));
+        if (Objects.nonNull(params.getProficiencyLevels()) && !params.getProficiencyLevels().isEmpty()) {
+            condition = condition.and(field("proficiency_level")
+                    .in(params.getProficiencyLevels().stream().map(Enum::name).toList()));
         }
         var meanings = dsl.selectFrom(table("meaning"))
                 .where(condition)

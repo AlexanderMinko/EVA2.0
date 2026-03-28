@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JButton;
@@ -156,7 +157,8 @@ public class WordGymPanel extends JPanel {
         learningStatusOptions.setSelectedIndex(3); // Learning
         learningStatusOptions.addActionListener(e -> {
             var selectedItem = (String) learningStatusOptions.getSelectedItem();
-            searchParams.setLearningStatus(ANY_OPTION.equals(selectedItem) ? null : LearningStatus.findByLabel(selectedItem));
+            var status = ANY_OPTION.equals(selectedItem) ? null : LearningStatus.findByLabel(selectedItem);
+            searchParams.setLearningStatuses(status != null ? Set.of(status) : Set.of());
             retrieveMeanings();
             showMeaningWithOptions();
             updateFoundedMatchesLabel();
@@ -171,7 +173,8 @@ public class WordGymPanel extends JPanel {
                 new Dimension(partOfSpeechOptions.getPreferredSize().width, proficiencyLevelOptions.getPreferredSize().height));
         proficiencyLevelOptions.addActionListener(e -> {
             var selectedItem = (String) proficiencyLevelOptions.getSelectedItem();
-            searchParams.setProficiencyLevel(ANY_OPTION.equals(selectedItem) ? null : ProficiencyLevel.valueOf(selectedItem));
+            var level = ANY_OPTION.equals(selectedItem) ? null : ProficiencyLevel.valueOf(selectedItem);
+            searchParams.setProficiencyLevels(level != null ? Set.of(level) : Set.of());
             retrieveMeanings();
             showMeaningWithOptions();
             updateFoundedMatchesLabel();
