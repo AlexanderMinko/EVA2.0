@@ -1,6 +1,10 @@
 package com.english.eva.repository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.english.eva.domain.Example;
 import org.jooq.DSLContext;
@@ -41,6 +45,22 @@ public class ExampleRepository {
                         r.get("MEANING_ID", Long.class),
                         r.get("TEXT", String.class)
                 ));
+    }
+
+    public Map<Long, List<Example>> findByMeaningIds(Set<Long> meaningIds) {
+        if (meaningIds.isEmpty()) return Map.of();
+        var result = new HashMap<Long, List<Example>>();
+        dsl.selectFrom(table("example"))
+                .where(field("meaning_id").in(meaningIds))
+                .fetch(r -> {
+                    var example = new Example(
+                            r.get("ID", Long.class),
+                            r.get("MEANING_ID", Long.class),
+                            r.get("TEXT", String.class));
+                    result.computeIfAbsent(example.getMeaningId(), k -> new ArrayList<>()).add(example);
+                    return example;
+                });
+        return result;
     }
 
     public void deleteByMeaningId(Long meaningId) {

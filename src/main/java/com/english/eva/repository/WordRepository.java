@@ -65,9 +65,7 @@ public class WordRepository {
         var words = dsl.selectFrom(table("words"))
                 .orderBy(field("last_modified").desc())
                 .fetch(this::mapToWord);
-        for (var word : words) {
-            word.setMeanings(meaningRepository.findByWordId(word.getId()));
-        }
+        loadMeanings(words);
         return words;
     }
 
@@ -76,9 +74,7 @@ public class WordRepository {
         var words = dsl.selectFrom(table("words"))
                 .where(field("id").in(ids))
                 .fetch(this::mapToWord);
-        for (var word : words) {
-            word.setMeanings(meaningRepository.findByWordId(word.getId()));
-        }
+        loadMeanings(words);
         return words;
     }
 
@@ -121,10 +117,17 @@ public class WordRepository {
                     .orderBy(field("last_modified").desc())
                     .fetch(this::mapToWord);
         }
-        for (var word : result) {
-            word.setMeanings(meaningRepository.findByWordId(word.getId()));
-        }
+        loadMeanings(result);
         return result;
+    }
+
+    private void loadMeanings(List<Word> words) {
+        if (words.isEmpty()) return;
+        var wordIds = words.stream().map(Word::getId).collect(Collectors.toSet());
+        var meaningsByWordId = meaningRepository.findByWordIds(wordIds);
+        for (var word : words) {
+            word.setMeanings(meaningsByWordId.getOrDefault(word.getId(), List.of()));
+        }
     }
 
     public void delete(Long id) {

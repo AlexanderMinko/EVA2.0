@@ -1,8 +1,13 @@
 package com.english.eva.repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.english.eva.domain.*;
 import org.jooq.DSLContext;
@@ -75,6 +80,23 @@ public class MeaningRepository {
             meaning.setExamples(exampleRepository.findByMeaningId(meaning.getId()));
         }
         return meanings;
+    }
+
+    public Map<Long, List<Meaning>> findByWordIds(Set<Long> wordIds) {
+        if (wordIds.isEmpty()) return Map.of();
+        var meanings = dsl.selectFrom(table("meaning"))
+                .where(field("word_id").in(wordIds))
+                .fetch(this::mapToMeaning);
+        var meaningIds = meanings.stream().map(Meaning::getId).collect(Collectors.toSet());
+        var examplesByMeaningId = exampleRepository.findByMeaningIds(meaningIds);
+        for (var meaning : meanings) {
+            meaning.setExamples(examplesByMeaningId.getOrDefault(meaning.getId(), List.of()));
+        }
+        var result = new HashMap<Long, List<Meaning>>();
+        for (var meaning : meanings) {
+            result.computeIfAbsent(meaning.getWordId(), k -> new ArrayList<>()).add(meaning);
+        }
+        return result;
     }
 
     public void updateLearningStatus(Long id, LearningStatus status) {
