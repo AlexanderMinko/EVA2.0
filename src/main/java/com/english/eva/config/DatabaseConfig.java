@@ -26,7 +26,11 @@ public class DatabaseConfig {
 
     private DataSource createDataSource(String dbFilePath) {
         var ds = new JdbcDataSource();
-        ds.setURL("jdbc:h2:file:" + dbFilePath);
+        if (dbFilePath.startsWith("mem:")) {
+            ds.setURL("jdbc:h2:" + dbFilePath + ";DB_CLOSE_DELAY=-1");
+        } else {
+            ds.setURL("jdbc:h2:file:" + dbFilePath);
+        }
         ds.setUser("sa");
         ds.setPassword("password");
         return ds;
@@ -36,7 +40,7 @@ public class DatabaseConfig {
         Flyway.configure()
                 .dataSource(dataSource)
                 .baselineOnMigrate(true)
-                .baselineVersion("1")
+                .baselineVersion("0")
                 .locations("classpath:db/migration")
                 .load()
                 .migrate();
