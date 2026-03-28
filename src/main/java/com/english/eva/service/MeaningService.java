@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.english.eva.domain.LearningStatus;
 import com.english.eva.domain.Meaning;
 import com.english.eva.domain.PartOfSpeech;
+import com.english.eva.model.MeaningSearchParams;
 import com.english.eva.repository.MeaningRepository;
 import com.english.eva.repository.WordRepository;
 import org.jooq.DSLContext;
@@ -43,6 +44,14 @@ public class MeaningService {
 
     public void saveBatch(List<Meaning> meanings) {
         meaningRepo.saveBatch(meanings);
+    }
+
+    public List<Meaning> search(MeaningSearchParams params) {
+        return meaningRepo.search(params);
+    }
+
+    public long getAllCount() {
+        return meaningRepo.count();
     }
 
     public Optional<Meaning> getById(Long id) {

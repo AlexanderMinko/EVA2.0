@@ -10,8 +10,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.english.eva.domain.*;
+import com.english.eva.model.MeaningSearchParams;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.impl.DSL;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -99,6 +102,32 @@ public class MeaningRepository {
             result.computeIfAbsent(meaning.getWordId(), k -> new ArrayList<>()).add(meaning);
         }
         return result;
+    }
+
+    public List<Meaning> search(MeaningSearchParams params) {
+        Condition condition = DSL.noCondition();
+        if (params.getLearningStatus() != null) {
+            condition = condition.and(field("learning_status").eq(params.getLearningStatus().name()));
+        }
+        if (params.getPartOfSpeech() != null) {
+            condition = condition.and(field("part_of_speech").eq(params.getPartOfSpeech().name()));
+        }
+        if (params.getProficiencyLevel() != null) {
+            condition = condition.and(field("proficiency_level").eq(params.getProficiencyLevel().name()));
+        }
+        var meanings = dsl.selectFrom(table("meaning"))
+                .where(condition)
+                .fetch(this::mapToMeaning);
+        var meaningIds = meanings.stream().map(Meaning::getId).collect(Collectors.toSet());
+        var examplesByMeaningId = exampleRepository.findByMeaningIds(meaningIds);
+        for (var meaning : meanings) {
+            meaning.setExamples(examplesByMeaningId.getOrDefault(meaning.getId(), List.of()));
+        }
+        return meanings;
+    }
+
+    public long count() {
+        return dsl.fetchCount(table("meaning"));
     }
 
     public void updateLearningStatus(Long id, LearningStatus status) {

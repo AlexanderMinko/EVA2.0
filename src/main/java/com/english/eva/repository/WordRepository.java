@@ -136,6 +136,10 @@ public class WordRepository {
                 .execute();
     }
 
+    public long count() {
+        return dsl.fetchCount(table("words"));
+    }
+
     public boolean existsByText(String text) {
         return dsl.fetchExists(
                 dsl.selectFrom(table("words"))

@@ -93,6 +93,10 @@ public class WordService {
         meaningCache.remove(wordId);
     }
 
+    public long getAllCount() {
+        return wordRepo.count();
+    }
+
     public boolean existsByText(String text) {
         return wordRepo.existsByText(text);
     }
