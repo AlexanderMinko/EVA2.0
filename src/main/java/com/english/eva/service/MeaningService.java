@@ -20,6 +20,7 @@ public class MeaningService {
     private final DSLContext dsl;
     private final MeaningRepository meaningRepo;
     private final WordRepository wordRepo;
+    private WordService wordService;
 
     public MeaningService(DSLContext dsl, MeaningRepository meaningRepo, WordRepository wordRepo) {
         this.dsl = dsl;
@@ -27,9 +28,17 @@ public class MeaningService {
         this.wordRepo = wordRepo;
     }
 
+    public void setWordService(WordService wordService) {
+        this.wordService = wordService;
+    }
+
     public Meaning save(Meaning meaning) {
         log.debug("Saving meaning: {}", meaning.getTarget());
-        return meaningRepo.save(meaning);
+        var saved = meaningRepo.save(meaning);
+        if (wordService != null) {
+            wordService.evictCache(meaning.getWordId());
+        }
+        return saved;
     }
 
     public void saveBatch(List<Meaning> meanings) {
@@ -42,13 +51,18 @@ public class MeaningService {
 
     public void updateLearningStatus(Long meaningId, LearningStatus status) {
         meaningRepo.updateLearningStatus(meaningId, status);
-        meaningRepo.findById(meaningId).ifPresent(meaning ->
-                wordRepo.updateLastModified(meaning.getWordId(), LocalDateTime.now()));
+        meaningRepo.findById(meaningId).ifPresent(meaning -> {
+            wordRepo.updateLastModified(meaning.getWordId(), LocalDateTime.now());
+            if (wordService != null) wordService.evictCache(meaning.getWordId());
+        });
         log.debug("Updated learning status for meaning id={} to {}", meaningId, status);
     }
 
     public void updatePartOfSpeech(Long meaningId, PartOfSpeech pos) {
         meaningRepo.updatePartOfSpeech(meaningId, pos);
+        meaningRepo.findById(meaningId).ifPresent(meaning -> {
+            if (wordService != null) wordService.evictCache(meaning.getWordId());
+        });
         log.debug("Updated part of speech for meaning id={} to {}", meaningId, pos);
     }
 }

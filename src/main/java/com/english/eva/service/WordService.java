@@ -3,7 +3,9 @@ package com.english.eva.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,10 +25,18 @@ public class WordService {
 
     private static final Logger log = LoggerFactory.getLogger(WordService.class);
 
+    private static final int CACHE_MAX_SIZE = 200;
+
     private final DSLContext dsl;
     private final WordRepository wordRepo;
     private final MeaningRepository meaningRepo;
     private final ExampleRepository exampleRepo;
+    private final Map<Long, Word> meaningCache = new LinkedHashMap<>(CACHE_MAX_SIZE, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<Long, Word> eldest) {
+            return size() > CACHE_MAX_SIZE;
+        }
+    };
 
     public WordService(DSLContext dsl, WordRepository wordRepo,
                        MeaningRepository meaningRepo, ExampleRepository exampleRepo) {
@@ -45,12 +55,21 @@ public class WordService {
     }
 
     public Optional<Word> getByIdWithMeanings(Long id) {
-        return wordRepo.findByIdWithMeanings(id);
+        var cached = meaningCache.get(id);
+        if (cached != null) {
+            log.debug("Cache hit for word id={}", id);
+            return Optional.of(cached);
+        }
+        var result = wordRepo.findByIdWithMeanings(id);
+        result.ifPresent(word -> meaningCache.put(id, word));
+        return result;
     }
 
     public Word save(Word word) {
         log.debug("Saving word: {}", word.getText());
-        return wordRepo.save(word);
+        var saved = wordRepo.save(word);
+        meaningCache.remove(saved.getId());
+        return saved;
     }
 
     public void delete(Long id) {
@@ -58,6 +77,7 @@ public class WordService {
             meaningRepo.deleteByWordId(id);
             wordRepo.delete(id);
         });
+        meaningCache.remove(id);
         log.debug("Deleted word id={}", id);
     }
 
@@ -67,6 +87,10 @@ public class WordService {
 
     public List<Word> getByWordIds(Set<Long> ids) {
         return wordRepo.findByIds(ids);
+    }
+
+    public void evictCache(Long wordId) {
+        meaningCache.remove(wordId);
     }
 
     public boolean existsByText(String text) {

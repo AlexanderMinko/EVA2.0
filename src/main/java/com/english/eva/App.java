@@ -20,7 +20,7 @@ public class App {
     public static void main(String[] args) {
         FlatLightLaf.setup();
 
-        var dbPath = System.getProperty("user.home") + "/English/eva_backup/eva";
+        var dbPath = System.getProperty("user.home") + "/English/eva/eva";
         log.info("Starting EVA 2.0 with database: {}", dbPath);
 
         var dbConfig = new DatabaseConfig(dbPath);
@@ -32,6 +32,7 @@ public class App {
 
         var wordService = new WordService(dsl, wordRepo, meaningRepo, exampleRepo);
         var meaningService = new MeaningService(dsl, meaningRepo, wordRepo);
+        meaningService.setWordService(wordService);
 
         SwingUtilities.invokeLater(() -> {
             var frame = new ApplicationFrame(wordService, meaningService, exampleRepo);
