@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,7 +57,7 @@ public class WordService {
 
     public Optional<Word> getByIdWithMeanings(Long id) {
         var cached = meaningCache.get(id);
-        if (cached != null) {
+        if (Objects.nonNull(cached)) {
             log.debug("Cache hit for word id={}", id);
             return Optional.of(cached);
         }

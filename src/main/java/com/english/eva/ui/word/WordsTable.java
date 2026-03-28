@@ -2,6 +2,7 @@ package com.english.eva.ui.word;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.swing.JTable;
@@ -41,7 +42,7 @@ public class WordsTable extends JTable {
 
     public void sortData() {
         var comparator = getSortingComparator();
-        if (comparator != null) {
+        if (Objects.nonNull(comparator)) {
             words = words.stream().sorted(comparator).toList();
             wordTableModel.setData(words);
             initColumnModel();
@@ -55,7 +56,7 @@ public class WordsTable extends JTable {
         } else if ("Frequency".equals(sortingDetails.getColumnName())) {
             comparator = Comparator.comparing(Word::getFrequency, Comparator.naturalOrder());
         }
-        if (comparator == null) {
+        if (Objects.isNull(comparator)) {
             return null;
         }
         if ("desc".equals(sortingDetails.getDirection())) {

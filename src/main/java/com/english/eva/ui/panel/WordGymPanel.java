@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JButton;
@@ -200,9 +201,9 @@ public class WordGymPanel extends JPanel {
         if (meanings.isEmpty()) return;
         var selectedDescription = options.getSelectedValue();
         var currentMeaning = meanings.get(meaningIndex.get());
-        if (selectedDescription == null || selectedDescription.isBlank()) return;
+        if (Objects.isNull(selectedDescription) || selectedDescription.isBlank()) return;
 
-        if (currentMeaning.getDescription() != null
+        if (Objects.nonNull(currentMeaning.getDescription())
                 && currentMeaning.getDescription().equals(selectedDescription)) {
             resultLabel.setText("CORRECT");
             resultLabel.setForeground(Color.GREEN);
@@ -260,8 +261,8 @@ public class WordGymPanel extends JPanel {
         var meaning = meanings.get(meaningIndex.get());
         targetWordMetaData.setText(
                 "%s / %s / %s".formatted(
-                        meaning.getLearningStatus() != null ? meaning.getLearningStatus().getLabel() : "",
-                        meaning.getPartOfSpeech() != null ? meaning.getPartOfSpeech().getLabel() : "",
+                        Objects.nonNull(meaning.getLearningStatus()) ? meaning.getLearningStatus().getLabel() : "",
+                        Objects.nonNull(meaning.getPartOfSpeech()) ? meaning.getPartOfSpeech().getLabel() : "",
                         meaning.getProficiencyLevel()));
         targetWordLabel.setText(meaning.getTarget());
         resultLabel.setVisible(false);

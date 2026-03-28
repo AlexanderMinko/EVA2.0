@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.english.eva.domain.Example;
@@ -21,7 +22,7 @@ public class ExampleRepository {
     }
 
     public Example save(Example example) {
-        if (example.getId() == null) {
+        if (Objects.isNull(example.getId())) {
             var record = dsl.insertInto(table("example"))
                     .columns(field("meaning_id"), field("text"))
                     .values(example.getMeaningId(), example.getText())

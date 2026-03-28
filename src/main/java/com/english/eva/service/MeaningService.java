@@ -2,6 +2,7 @@ package com.english.eva.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.english.eva.domain.LearningStatus;
@@ -10,6 +11,7 @@ import com.english.eva.domain.PartOfSpeech;
 import com.english.eva.model.MeaningSearchParams;
 import com.english.eva.repository.MeaningRepository;
 import com.english.eva.repository.WordRepository;
+import lombok.Setter;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ public class MeaningService {
     private final DSLContext dsl;
     private final MeaningRepository meaningRepo;
     private final WordRepository wordRepo;
+    @Setter
     private WordService wordService;
 
     public MeaningService(DSLContext dsl, MeaningRepository meaningRepo, WordRepository wordRepo) {
@@ -29,21 +32,13 @@ public class MeaningService {
         this.wordRepo = wordRepo;
     }
 
-    public void setWordService(WordService wordService) {
-        this.wordService = wordService;
-    }
-
     public Meaning save(Meaning meaning) {
         log.debug("Saving meaning: {}", meaning.getTarget());
         var saved = meaningRepo.save(meaning);
-        if (wordService != null) {
+        if (Objects.nonNull(wordService)) {
             wordService.evictCache(meaning.getWordId());
         }
         return saved;
-    }
-
-    public void saveBatch(List<Meaning> meanings) {
-        meaningRepo.saveBatch(meanings);
     }
 
     public List<Meaning> search(MeaningSearchParams params) {
@@ -62,7 +57,7 @@ public class MeaningService {
         meaningRepo.updateLearningStatus(meaningId, status);
         meaningRepo.findById(meaningId).ifPresent(meaning -> {
             wordRepo.updateLastModified(meaning.getWordId(), LocalDateTime.now());
-            if (wordService != null) wordService.evictCache(meaning.getWordId());
+            if (Objects.nonNull(wordService)) wordService.evictCache(meaning.getWordId());
         });
         log.debug("Updated learning status for meaning id={} to {}", meaningId, status);
     }
@@ -70,7 +65,7 @@ public class MeaningService {
     public void updatePartOfSpeech(Long meaningId, PartOfSpeech pos) {
         meaningRepo.updatePartOfSpeech(meaningId, pos);
         meaningRepo.findById(meaningId).ifPresent(meaning -> {
-            if (wordService != null) wordService.evictCache(meaning.getWordId());
+            if (Objects.nonNull(wordService)) wordService.evictCache(meaning.getWordId());
         });
         log.debug("Updated part of speech for meaning id={} to {}", meaningId, pos);
     }

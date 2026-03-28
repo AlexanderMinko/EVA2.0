@@ -24,7 +24,7 @@ public class WordDto {
     public WordDto(Word word) {
         this.id = word.getId();
         this.text = word.getText();
-        this.transcript = word.getTranscript() != null ? "[ " + word.getTranscript() + " ]" : "";
+        this.transcript = Objects.nonNull(word.getTranscript()) ? "[ " + word.getTranscript() + " ]" : "";
         this.frequency = String.valueOf(word.getFrequency());
         this.progress = computeProgress(word.getMeanings());
         this.levels = computeLevels(word.getMeanings());

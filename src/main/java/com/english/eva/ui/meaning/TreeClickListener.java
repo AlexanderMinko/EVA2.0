@@ -3,6 +3,7 @@ package com.english.eva.ui.meaning;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -40,7 +41,7 @@ public class TreeClickListener extends MouseAdapter {
 
     private void doPopup(MouseEvent event) {
         var path = meaningTree.getPathForLocation(event.getX(), event.getY());
-        if (path == null) return;
+        if (Objects.isNull(path)) return;
 
         var node = (DefaultMutableTreeNode) path.getLastPathComponent();
         if (node.getUserObject() instanceof MeaningNode meaningNode

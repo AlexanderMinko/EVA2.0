@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class MeaningRepository {
     }
 
     public Meaning save(Meaning meaning) {
-        if (meaning.getId() == null) {
+        if (Objects.isNull(meaning.getId())) {
             var record = dsl.insertInto(table("meaning"))
                     .columns(field("word_id"), field("target"), field("transcript"),
                             field("topic"), field("description"), field("part_of_speech"),
@@ -38,10 +39,10 @@ public class MeaningRepository {
                             field("learning_status"), field("date_created"), field("last_modified"))
                     .values(meaning.getWordId(), meaning.getTarget(), meaning.getTranscript(),
                             meaning.getTopic(), meaning.getDescription(),
-                            meaning.getPartOfSpeech() != null ? meaning.getPartOfSpeech().name() : null,
-                            meaning.getProficiencyLevel() != null ? meaning.getProficiencyLevel().name() : null,
-                            meaning.getMeaningSource() != null ? meaning.getMeaningSource().name() : null,
-                            meaning.getLearningStatus() != null ? meaning.getLearningStatus().name() : null,
+                            Objects.nonNull(meaning.getPartOfSpeech()) ? meaning.getPartOfSpeech().name() : null,
+                            Objects.nonNull(meaning.getProficiencyLevel()) ? meaning.getProficiencyLevel().name() : null,
+                            Objects.nonNull(meaning.getMeaningSource()) ? meaning.getMeaningSource().name() : null,
+                            Objects.nonNull(meaning.getLearningStatus()) ? meaning.getLearningStatus().name() : null,
                             meaning.getDateCreated(), meaning.getLastModified())
                     .returningResult(field("id"))
                     .fetchOne();
@@ -52,10 +53,10 @@ public class MeaningRepository {
                     .set(field("transcript"), meaning.getTranscript())
                     .set(field("topic"), meaning.getTopic())
                     .set(field("description"), meaning.getDescription())
-                    .set(field("part_of_speech"), meaning.getPartOfSpeech() != null ? meaning.getPartOfSpeech().name() : null)
-                    .set(field("proficiency_level"), meaning.getProficiencyLevel() != null ? meaning.getProficiencyLevel().name() : null)
-                    .set(field("meaning_source"), meaning.getMeaningSource() != null ? meaning.getMeaningSource().name() : null)
-                    .set(field("learning_status"), meaning.getLearningStatus() != null ? meaning.getLearningStatus().name() : null)
+                    .set(field("part_of_speech"), Objects.nonNull(meaning.getPartOfSpeech()) ? meaning.getPartOfSpeech().name() : null)
+                    .set(field("proficiency_level"), Objects.nonNull(meaning.getProficiencyLevel()) ? meaning.getProficiencyLevel().name() : null)
+                    .set(field("meaning_source"), Objects.nonNull(meaning.getMeaningSource()) ? meaning.getMeaningSource().name() : null)
+                    .set(field("learning_status"), Objects.nonNull(meaning.getLearningStatus()) ? meaning.getLearningStatus().name() : null)
                     .set(field("last_modified"), meaning.getLastModified())
                     .where(field("id").eq(meaning.getId()))
                     .execute();
@@ -106,13 +107,13 @@ public class MeaningRepository {
 
     public List<Meaning> search(MeaningSearchParams params) {
         Condition condition = DSL.noCondition();
-        if (params.getLearningStatus() != null) {
+        if (Objects.nonNull(params.getLearningStatus())) {
             condition = condition.and(field("learning_status").eq(params.getLearningStatus().name()));
         }
-        if (params.getPartOfSpeech() != null) {
+        if (Objects.nonNull(params.getPartOfSpeech())) {
             condition = condition.and(field("part_of_speech").eq(params.getPartOfSpeech().name()));
         }
-        if (params.getProficiencyLevel() != null) {
+        if (Objects.nonNull(params.getProficiencyLevel())) {
             condition = condition.and(field("proficiency_level").eq(params.getProficiencyLevel().name()));
         }
         var meanings = dsl.selectFrom(table("meaning"))
@@ -168,13 +169,13 @@ public class MeaningRepository {
         meaning.setTopic(r.get("TOPIC", String.class));
         meaning.setDescription(r.get("DESCRIPTION", String.class));
         var pos = r.get("PART_OF_SPEECH", String.class);
-        meaning.setPartOfSpeech(pos != null ? PartOfSpeech.valueOf(pos) : null);
+        meaning.setPartOfSpeech(Objects.nonNull(pos) ? PartOfSpeech.valueOf(pos) : null);
         var level = r.get("PROFICIENCY_LEVEL", String.class);
-        meaning.setProficiencyLevel(level != null ? ProficiencyLevel.valueOf(level) : null);
+        meaning.setProficiencyLevel(Objects.nonNull(level) ? ProficiencyLevel.valueOf(level) : null);
         var source = r.get("MEANING_SOURCE", String.class);
-        meaning.setMeaningSource(source != null ? MeaningSource.valueOf(source) : null);
+        meaning.setMeaningSource(Objects.nonNull(source) ? MeaningSource.valueOf(source) : null);
         var status = r.get("LEARNING_STATUS", String.class);
-        meaning.setLearningStatus(status != null ? LearningStatus.valueOf(status) : null);
+        meaning.setLearningStatus(Objects.nonNull(status) ? LearningStatus.valueOf(status) : null);
         meaning.setDateCreated(r.get("DATE_CREATED", LocalDateTime.class));
         meaning.setLastModified(r.get("LAST_MODIFIED", LocalDateTime.class));
         return meaning;

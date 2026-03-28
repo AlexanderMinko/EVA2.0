@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.util.Objects;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,7 +47,7 @@ public class MeaningTreeCellRenderer extends JPanel implements TreeCellRenderer 
                 case MEANING -> {
                     keyField.setText(meaningNode.getDisplayText() + " ");
                     keyField.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
-                    var statusLabel = meaningNode.getLearningStatus() != null
+                    var statusLabel = Objects.nonNull(meaningNode.getLearningStatus())
                             ? meaningNode.getLearningStatus().getLabel() : "";
                     valueField.setText(statusLabel);
                     valueField.setOpaque(true);
@@ -55,7 +56,7 @@ public class MeaningTreeCellRenderer extends JPanel implements TreeCellRenderer 
                     valueField.setBorder(new EmptyBorder(3, 3, 3, 3));
                 }
                 case DESCRIPTION -> {
-                    var level = meaningNode.getProficiencyLevel() != null
+                    var level = Objects.nonNull(meaningNode.getProficiencyLevel())
                             ? meaningNode.getProficiencyLevel().name() : "";
                     keyField.setText(level);
                     keyField.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
@@ -68,7 +69,7 @@ public class MeaningTreeCellRenderer extends JPanel implements TreeCellRenderer 
                 }
                 case SOURCE, PART_OF_SPEECH -> {
                     var path = tree.getPathForRow(row);
-                    boolean isTargetRow = path != null && (path.getPath().length == 3 || path.getPath().length == 4);
+                    boolean isTargetRow = Objects.nonNull(path) && (path.getPath().length == 3 || path.getPath().length == 4);
                     keyField.setText(meaningNode.getDisplayText());
                     keyField.setFont(isTargetRow
                             ? new Font(font.getName(), Font.BOLD, font.getSize())

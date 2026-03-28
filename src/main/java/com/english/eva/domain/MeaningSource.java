@@ -1,7 +1,10 @@
 package com.english.eva.domain;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
+@Getter
 public enum MeaningSource {
     ENGLISH_PROFILE("English Profile"),
     CAMBRIDGE_DICTIONARY("Cambridge dictionary"),
@@ -11,10 +14,6 @@ public enum MeaningSource {
 
     MeaningSource(String label) {
         this.label = label;
-    }
-
-    public String getLabel() {
-        return label;
     }
 
     public static MeaningSource findByLabel(String label) {

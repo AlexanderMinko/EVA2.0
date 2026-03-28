@@ -1,5 +1,6 @@
 package com.english.eva.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 import com.english.eva.domain.LearningStatus;
@@ -11,7 +12,7 @@ public record SearchParams(
         Set<LearningStatus> statuses
 ) {
     public SearchParams {
-        if (levels == null) levels = Set.of();
-        if (statuses == null) statuses = Set.of();
+        if (Objects.isNull(levels)) levels = Set.of();
+        if (Objects.isNull(statuses)) statuses = Set.of();
     }
 }

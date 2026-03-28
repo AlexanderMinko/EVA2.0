@@ -2,6 +2,7 @@ package com.english.eva.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class WordRepository {
     }
 
     public Word save(Word word) {
-        if (word.getId() == null) {
+        if (Objects.isNull(word.getId())) {
             var record = dsl.insertInto(table("words"))
                     .columns(field("text"), field("transcript"), field("frequency"),
                             field("date_created"), field("last_modified"))
@@ -85,7 +86,7 @@ public class WordRepository {
 
         Condition condition = DSL.noCondition();
 
-        if (params.text() != null && !params.text().isBlank()) {
+        if (Objects.nonNull(params.text()) && !params.text().isBlank()) {
             condition = condition.and(field("words.text").likeIgnoreCase("%" + params.text() + "%"));
         }
         if (!params.levels().isEmpty()) {

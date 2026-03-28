@@ -3,7 +3,9 @@ package com.english.eva.ui.meaning;
 import com.english.eva.domain.LearningStatus;
 import com.english.eva.domain.PartOfSpeech;
 import com.english.eva.domain.ProficiencyLevel;
+import lombok.Getter;
 
+@Getter
 public class MeaningNode {
 
     public enum NodeType {
@@ -52,14 +54,6 @@ public class MeaningNode {
     public static MeaningNode example(String text) {
         return new MeaningNode(NodeType.EXAMPLE, text);
     }
-
-    public NodeType getType() { return type; }
-    public String getDisplayText() { return displayText; }
-    public Long getMeaningId() { return meaningId; }
-    public LearningStatus getLearningStatus() { return learningStatus; }
-    public PartOfSpeech getPartOfSpeech() { return partOfSpeech; }
-    public ProficiencyLevel getProficiencyLevel() { return proficiencyLevel; }
-    public String getDescription() { return description; }
 
     @Override
     public String toString() {
