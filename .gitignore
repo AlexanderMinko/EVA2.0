@@ -7,3 +7,4 @@ target/
 .DS_Store
 *.h2.db
 *.trace.db
+.superpowers

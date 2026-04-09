@@ -43,5 +43,7 @@ public class MeaningsPanel extends JPanel {
 
         add(settingsPanel, "cell 0 0, pushx");
         add(mainSplitPane, "cell 0 1, push, grow");
+
+        settingsPanel.triggerSearch();
     }
 }

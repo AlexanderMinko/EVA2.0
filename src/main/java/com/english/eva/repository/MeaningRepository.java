@@ -73,7 +73,11 @@ public class MeaningRepository {
     public Optional<Meaning> findById(Long id) {
         return dsl.selectFrom(table("meaning"))
                 .where(field("id").eq(id))
-                .fetchOptional(this::mapToMeaning);
+                .fetchOptional(this::mapToMeaning)
+                .map(meaning -> {
+                    meaning.setExamples(exampleRepository.findByMeaningId(meaning.getId()));
+                    return meaning;
+                });
     }
 
     public List<Meaning> findByWordId(Long wordId) {
@@ -123,6 +127,7 @@ public class MeaningRepository {
         }
         var meanings = dsl.selectFrom(table("meaning"))
                 .where(condition)
+                .orderBy(field("last_modified").desc())
                 .fetch(this::mapToMeaning);
         var meaningIds = meanings.stream().map(Meaning::getId).collect(Collectors.toSet());
         var examplesByMeaningId = exampleRepository.findByMeaningIds(meaningIds);

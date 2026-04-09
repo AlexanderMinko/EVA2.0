@@ -22,6 +22,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -59,23 +60,35 @@ public class MeaningSettingsPanel extends JPanel {
         initStatusBar();
         initPartOfSpeechCombo();
 
-        var filtersPanel = new JPanel();
-        filtersPanel.setLayout(new BoxLayout(filtersPanel, BoxLayout.X_AXIS));
-        filtersPanel.add(levelsPanel);
-        filtersPanel.add(statusPanel);
-        filtersPanel.add(posPanel);
+        var levelLabel = new JLabel("Level:");
+        var statusLabel = new JLabel("Status:");
+        var posLabel = new JLabel("Part of Speech:");
 
-        groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(LEADING)
-                .addGroup(groupLayout.createSequentialGroup()
+        groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
+                .addGroup(groupLayout.createParallelGroup(LEADING)
                         .addComponent(searchField)
-                        .addComponent(searchButton))
-                .addComponent(filtersPanel));
+                        .addGroup(groupLayout.createSequentialGroup()
+                                .addComponent(levelLabel)
+                                .addComponent(levelsPanel)))
+                .addGroup(groupLayout.createParallelGroup(LEADING)
+                        .addComponent(searchButton)
+                        .addGroup(groupLayout.createSequentialGroup()
+                                .addComponent(statusLabel)
+                                .addComponent(statusPanel)
+                                .addComponent(posLabel)
+                                .addComponent(posPanel))));
 
         groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
                 .addGroup(groupLayout.createParallelGroup(BASELINE)
                         .addComponent(searchField)
                         .addComponent(searchButton))
-                .addComponent(filtersPanel));
+                .addGroup(groupLayout.createParallelGroup(BASELINE)
+                        .addComponent(levelLabel)
+                        .addComponent(levelsPanel)
+                        .addComponent(statusLabel)
+                        .addComponent(statusPanel)
+                        .addComponent(posLabel)
+                        .addComponent(posPanel)));
     }
 
     public void triggerSearch() {
